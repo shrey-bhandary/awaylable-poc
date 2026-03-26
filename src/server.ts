@@ -19,7 +19,7 @@ type RuntimeLogEntry = {
   details?: Record<string, unknown>;
 };
 
-const app = express();
+export const app = express();
 app.use(
   express.json({
     limit: "1mb",
@@ -54,8 +54,10 @@ function pushRuntimeLog(entry: Omit<RuntimeLogEntry, "id" | "at">): RuntimeLogEn
 const { config, pipeline } = createVoicePipeline((entry) => {
   pushRuntimeLog(entry);
 });
+
+const dataRoot = process.env.VERCEL === "1" ? path.join("/tmp", "awaylable-data") : path.join(process.cwd(), config.DATA_DIR);
 const callStore = new CallSessionStore({
-  persistFilePath: path.join(process.cwd(), config.DATA_DIR, "calls.json")
+  persistFilePath: path.join(dataRoot, "calls.json")
 });
 const exotelEnabled = config.EXOTEL_ENABLED;
 const exotelLiveOnlyMode = config.EXOTEL_LIVE_ONLY_MODE;
@@ -431,21 +433,29 @@ app.get("*", (_req, res) => {
 
 const startPort = Number(config.WEB_PORT ?? 3000);
 
-function listenWithFallback(port: number, attemptsLeft: number): void {
-  const server = app.listen(port, () => {
-    console.log(`Web call console ready on http://localhost:${port}`);
-  });
+export function startServer(): void {
+  function listenWithFallback(port: number, attemptsLeft: number): void {
+    const server = app.listen(port, () => {
+      console.log(`Web call console ready on http://localhost:${port}`);
+    });
 
-  server.on("error", (error: NodeJS.ErrnoException) => {
-    if (error.code === "EADDRINUSE" && attemptsLeft > 0) {
-      const nextPort = port + 1;
-      console.warn(`Port ${port} is in use, retrying on ${nextPort}...`);
-      listenWithFallback(nextPort, attemptsLeft - 1);
-      return;
-    }
+    server.on("error", (error: NodeJS.ErrnoException) => {
+      if (error.code === "EADDRINUSE" && attemptsLeft > 0) {
+        const nextPort = port + 1;
+        console.warn(`Port ${port} is in use, retrying on ${nextPort}...`);
+        listenWithFallback(nextPort, attemptsLeft - 1);
+        return;
+      }
 
-    throw error;
-  });
+      throw error;
+    });
+  }
+
+  listenWithFallback(startPort, 5);
 }
 
-listenWithFallback(startPort, 5);
+if (process.env.VERCEL !== "1") {
+  startServer();
+}
+
+export default app;
