@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Awaylable Call Console</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="bg-orb orb-a"></div>
+    <div class="bg-orb orb-b"></div>
+
+    <main class="shell">
+      <section class="hero">
+        <p class="tag">Live Demo Mode</p>
+        <h1>Awaylable Voice Call Console</h1>
+        <p class="subtitle">
+          Full phone-call simulation experience: start a call, speak to the AI agent, watch call flow, and inspect transcript,
+          knowledge grounding, and TTS output.
+        </p>
+      </section>
+
+      <section class="panel phase-note" aria-label="Simulation notice">
+        <div>
+          <h2>Simulated Phone Line</h2>
+          <p>
+            Demo number: <strong id="virtualPhoneNumber">+91 98765 43210</strong>
+          </p>
+          <p id="exotelNotice" class="notice-text">
+            Real PSTN calling is intentionally disabled right now. Exotel vSIP is deferred until provider checks and KYC are
+            completed.
+          </p>
+        </div>
+      </section>
+
+      <section id="webControlsPanel" class="panel controls" aria-label="Call controls">
+        <div class="grid-two">
+          <label>
+            Virtual caller ID
+            <input id="fixedCallerId" type="text" value="+919876543210" disabled />
+          </label>
+          <label>
+            Agent line label
+            <input id="toInput" type="text" placeholder="Awaylable Reception" />
+          </label>
+        </div>
+
+        <div class="actions">
+          <button id="startBtn" class="btn btn-primary">Start Call</button>
+          <button id="endBtn" class="btn btn-ghost" disabled>End Call</button>
+        </div>
+
+        <div class="status" id="statusBadge">No active call</div>
+      </section>
+
+      <section class="talk-layout" aria-label="Conversation and live tool logs">
+        <section id="webTalkPanel" class="panel talk" aria-label="Conversation">
+          <div class="talk-head">
+            <h2>Conversation</h2>
+            <span id="callIdLabel">Call ID: -</span>
+          </div>
+
+          <div class="call-lanes" aria-live="polite">
+            <div class="lane lane-user">
+              <h3>User</h3>
+              <div id="userLane" class="lane-stream"></div>
+            </div>
+            <div class="lane lane-agent">
+              <h3>Agent</h3>
+              <div id="agentLane" class="lane-stream"></div>
+            </div>
+          </div>
+
+          <div class="audio-box" aria-label="Agent voice output">
+            <span id="audioStatus">Agent voice: waiting for response</span>
+            <audio id="agentAudio" controls></audio>
+          </div>
+
+          <section class="voice-input" aria-label="Voice input controls">
+            <div class="actions">
+              <button id="startListeningBtn" class="btn btn-primary" type="button" disabled>Start Talking</button>
+              <button id="stopListeningBtn" class="btn btn-ghost" type="button" disabled>Stop</button>
+            </div>
+            <p id="micStatus" class="status-inline">Mic: idle</p>
+            <p class="hint-text">Your speech is transcribed and sent as the caller turn automatically.</p>
+            <pre id="liveTranscript">Waiting for voice input...</pre>
+          </section>
+        </section>
+
+        <aside class="panel ops-panel" aria-label="Tool calling logs">
+          <div class="talk-head">
+            <h2>Tool Log Chat</h2>
+            <span>Live</span>
+          </div>
+          <div class="ops-status-row">
+            <span id="livekitStatusPill" class="ops-pill">LiveKit: checking...</span>
+            <span id="sarvamStatusPill" class="ops-pill">Sarvam: checking...</span>
+          </div>
+          <div id="toolLogChat" class="tool-log-chat" aria-live="polite">
+            <p class="tool-log-item muted">Waiting for runtime logs...</p>
+          </div>
+          <h3>Integration Health</h3>
+          <pre id="integrationHealth">Loading...</pre>
+          <h3>Raw Runtime Logs</h3>
+          <pre id="runtimeLogs">Waiting for runtime logs...</pre>
+        </aside>
+      </section>
+
+      <section class="panel details" aria-label="Response details">
+        <div>
+          <h3>Knowledge Context</h3>
+          <pre id="knowledgeContext">-</pre>
+        </div>
+        <div>
+          <h3>TTS Payload</h3>
+          <pre id="ttsPayload">-</pre>
+        </div>
+      </section>
+
+      <section class="panel details" aria-label="Provider and call telemetry">
+        <div>
+          <h3>Provider Status</h3>
+          <p id="providerStatus" class="status-inline">Event stream connecting...</p>
+          <h3>Provider Events</h3>
+          <pre id="providerEvents">-</pre>
+        </div>
+        <div>
+          <h3>Call History</h3>
+          <pre id="callHistory">Loading...</pre>
+        </div>
+      </section>
+
+      <section id="exotelPanel" class="panel" aria-label="Exotel media turn simulator">
+        <div class="talk-head">
+          <h2>Exotel Media Turn Simulator</h2>
+          <span>For Phase 2 bridge testing</span>
+        </div>
+        <div class="grid-two">
+          <label>
+            Exotel Call SID
+            <input id="exotelCallSid" type="text" placeholder="CA123" />
+          </label>
+          <label>
+            Caller number
+            <input id="exotelFrom" type="text" placeholder="+919800000001" />
+          </label>
+        </div>
+        <label>
+          Transcription text from provider
+          <textarea id="exotelTranscription" rows="3" placeholder="Customer says: what is your pricing?"></textarea>
+        </label>
+        <div class="actions">
+          <button id="sendExotelTurnBtn" class="btn btn-primary" type="button">Send Exotel Turn</button>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
