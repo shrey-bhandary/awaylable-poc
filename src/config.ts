@@ -31,7 +31,7 @@ const envSchema = z.object({
   SARVAM_BASE_URL: z.string().url().default("https://api.sarvam.ai"),
   SARVAM_STT_PATH: z.string().default("/v1/speech-to-text"),
   SARVAM_TTS_PATH: z.string().default("/text-to-speech"),
-  SARVAM_VOICE: z.string().default("en-IN-anushka"),
+  SARVAM_VOICE: z.string().default("shubh"),
   SARVAM_ONLY_MODE: envBoolean.default(true),
   LIVEKIT_URL: z.string().optional(),
   LIVEKIT_API_KEY: z.string().optional(),

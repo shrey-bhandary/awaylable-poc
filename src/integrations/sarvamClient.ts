@@ -54,6 +54,7 @@ export class SarvamClient {
     }
 
     const url = `${this.config.baseUrl}${this.config.ttsPath}`;
+    const speaker = this.config.voice.replace(/^([a-z]{2}-IN-)/i, "").trim();
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -62,7 +63,9 @@ export class SarvamClient {
       },
       body: JSON.stringify({
         text,
-        voice: this.config.voice
+        speaker: speaker || this.config.voice,
+        target_language_code: "en-IN",
+        model: "bulbul:v3"
       })
     });
 
@@ -99,7 +102,7 @@ export class SarvamClient {
       component: "sarvam",
       action: "synthesize",
       status: "ok",
-      details: { voice: this.config.voice }
+      details: { voice: this.config.voice, speaker: speaker || this.config.voice }
     });
     return {
       provider: "sarvam",
